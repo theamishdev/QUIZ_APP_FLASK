@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Quizify</h1>
+    <p class="text-muted">Explore public quizzes or create your own custom challenge.</p>
+</div>
+
+<div class="quiz-grid">
+    {% for quiz in quizzes %}
+        <div class="glass-card">
+            <h3>{{ quiz.title }}</h3>
+            <p>{{ quiz.description }}</p>
+            <div class="quiz-meta">
+                <span>By {{ quiz.author.username }}</span>
+                <span>{{ quiz.date_posted.strftime('%Y-%m-%d') }}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <a href="{{ url_for('quiz.take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary" style="flex: 1;">Take Quiz</a>
+                {% if quiz.author == current_user %}
+                    <form action="{{ url_for('quiz.delete_quiz', quiz_id=quiz.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn" style="background: #ef4444; color: white;" onclick="return confirm('Are you sure you want to delete this quiz?')">Delete</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card">
+            <p>No quizzes available yet. Be the first to create one!</p>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 0;
+    }
+    .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .quiz-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}

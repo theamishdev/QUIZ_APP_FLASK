@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card" style="max-width: 600px; margin: 5rem auto; text-align: center;">
+    <h1>Quiz Completed!</h1>
+    <div class="score-display" style="margin: 2rem 0;">
+        <span style="font-size: 5rem; font-weight: 700; color: var(--primary);">{{ score }}</span>
+        <span style="font-size: 2rem; color: var(--text-muted);">/ {{ total }}</span>
+    </div>
+    
+    {% set percentage = (score / total * 100) if total > 0 else 0 %}
+    <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+        {% if percentage >= 80 %}
+            Outstanding! You're a master of {{ quiz.title }}.
+        {% elif percentage >= 50 %}
+            Good job! You have a solid grasp of the material.
+        {% else %}
+            Keep practicing! You'll get better next time.
+        {% endif %}
+    </p>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem;">
+        <a href="{{ url_for('main.home') }}" class="btn btn-primary">Back to Home</a>
+        <a href="{{ url_for('quiz.take_quiz', quiz_id=quiz.id) }}" class="btn btn-secondary" style="background: #334155; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem;">Try Again</a>
+    </div>
+
+    <div class="results-breakdown" style="text-align: left;">
+        <h2 style="margin-bottom: 1.5rem;">Question Breakdown</h2>
+        {% for item in results_breakdown %}
+            <div class="glass-card result-item {{ 'correct' if item.is_correct else 'incorrect' }}" style="padding: 1.5rem; border-left: 5px solid {{ '#10b981' if item.is_correct else '#ef4444' }};">
+                <h3>{{ loop.index }}. {{ item.question }}</h3>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Your Answer:</strong> <span style="color: {{ '#10b981' if item.is_correct else '#ef4444' }};">{{ item.selected_choice }}</span></p>
+                    {% if not item.is_correct %}
+                        <p style="margin-top: 0.5rem;"><strong>Correct Answer:</strong> <span style="color: #10b981;">{{ item.correct_choice }}</span></p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .result-item {
+        margin-bottom: 1rem;
+        background: rgba(30, 41, 59, 0.4);
+    }
+    .result-item.incorrect {
+        background: rgba(239, 68, 68, 0.05);
+    }
+    .result-item.correct {
+        background: rgba(16, 185, 129, 0.05);
+    }
+</style>
+{% endblock %}
