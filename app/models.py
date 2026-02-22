@@ -1,4 +1,5 @@
 from datetime import datetime
+import secrets
 from app import db, login_manager
 from flask_login import UserMixin
 
@@ -6,17 +7,42 @@ from flask_login import UserMixin
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Association table for Students in Classrooms
+classroom_members = db.Table('classroom_members',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('classroom_id', db.Integer, db.ForeignKey('classroom.id'), primary_key=True)
+)
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     fullname = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    role = db.Column(db.String(10), nullable=False, default='student') # 'teacher' or 'student'
     password = db.Column(db.String(60), nullable=False)
+    
+    # Relationships
     quizzes = db.relationship('Quiz', backref='author', lazy=True)
     results = db.relationship('Result', backref='user', lazy=True)
+    
+    # Classrooms owned by teacher
+    owned_classrooms = db.relationship('Classroom', backref='admin', lazy=True)
+    
+    # Classrooms joined by student
+    joined_classrooms = db.relationship('Classroom', secondary=classroom_members, backref=db.backref('students', lazy='dynamic'))
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}', '{self.email}', '{self.role}')"
+
+class Classroom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    join_code = db.Column(db.String(10), unique=True, nullable=False, default=lambda: secrets.token_hex(4).upper())
+    admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    quizzes = db.relationship('Quiz', backref='classroom', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"Classroom('{self.name}', Join Code: '{self.join_code}')"
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +50,7 @@ class Quiz(db.Model):
     description = db.Column(db.Text, nullable=True)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    classroom_id = db.Column(db.Integer, db.ForeignKey('classroom.id'), nullable=True) # Now linked to classroom
     questions = db.relationship('Question', backref='quiz', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -54,7 +81,7 @@ class Result(db.Model):
     date_taken = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
-    quiz = db.relationship('Quiz')
+    quiz_rel = db.relationship('Quiz') # Renamed to avoid backref collision if any
 
     def __repr__(self):
         return f"Result(User {self.user_id}, Quiz {self.quiz_id}, Score {self.score}/{self.total_questions})"

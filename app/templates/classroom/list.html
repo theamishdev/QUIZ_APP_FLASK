@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>My Classrooms</h1>
+    {% if current_user.role == 'teacher' %}
+        <a href="{{ url_for('classroom.new_classroom') }}" class="btn btn-primary">Create Classroom</a>
+    {% else %}
+        <a href="{{ url_for('classroom.join_classroom') }}" class="btn btn-primary">Join Classroom</a>
+    {% endif %}
+</div>
+
+<div class="quiz-grid">
+    {% for classroom in classrooms %}
+        <div class="glass-card">
+            <h3>{{ classroom.name }}</h3>
+            {% if current_user.role == 'teacher' %}
+                <p>Join Code: <strong style="color: var(--primary);">{{ classroom.join_code }}</strong></p>
+                <p class="text-muted">{{ classroom.students.count() }} Students</p>
+            {% else %}
+                <p class="text-muted">Teacher: {{ classroom.admin.username }}</p>
+            {% endif %}
+            <a href="{{ url_for('classroom.view_classroom', classroom_id=classroom.id) }}" class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">Enter Classroom</a>
+        </div>
+    {% else %}
+        <div class="glass-card" style="grid-column: 1/-1; text-align: center;">
+            <p>You haven't {% if current_user.role == 'teacher' %}created{% else %}joined{% endif %} any classrooms yet.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

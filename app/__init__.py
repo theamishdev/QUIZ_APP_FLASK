@@ -20,9 +20,11 @@ def create_app():
     from app.main.routes import main
     from app.auth.routes import auth
     from app.quiz.routes import quiz
+    from app.classroom.routes import classroom
     
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(quiz)
+    app.register_blueprint(classroom)
 
     return app

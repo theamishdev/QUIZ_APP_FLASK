@@ -1,50 +1,45 @@
 =========================================
-      QUIZIFY - PROJECT GUIDE
+      QUIZIFY - CLASSROOM EDITION
 =========================================
 
-Quizify is a modern, responsive web app built with Flask that allows you to
-create, take, and manage custom quizzes with detailed feedback.
+Quizify is now a classroom-based system where Teachers manage quizzes
+and Students participate in their assigned rooms.
 
 --- HOW TO RUN THE PROJECT ---
 
 1. Prerequisites:
    - Python 3.x installed.
-   - Required packages: flask, flask-sqlalchemy, flask-login, werkzeug.
-   (Run: pip install flask flask-sqlalchemy flask-login werkzeug)
+   - Run: pip install flask flask-sqlalchemy flask-login werkzeug
 
 2. Start the Server:
-   - Navigate to the project root folder (PEP_PRO).
-   - Run the command: python run.py
+   - Run: python run.py
 
 3. Access the App:
-   - Open your browser and go to: http://127.0.0.1:5000
+   - Go to: http://127.0.0.1:5000
 
---- IMPORTANT FEATURES ---
+--- CLASSROOM WORKFLOW ---
 
-- REGISTRATION / LOGIN:
-  Securely create an account to start managing your own quizzes.
+FOR TEACHERS (Admins):
+1. REGISTER: Choose the 'Teacher' role during signup.
+2. CREATE ROOM: Go to 'Classrooms' -> 'Create Classroom'.
+3. SHARE CODE: Each classroom has a unique 'Join Code'. Give this to your students.
+4. MANAGE QUIZZES: Enter the classroom and click 'Create New Quiz'. 
+   These quizzes are private to your classroom members.
 
-- QUIZ CREATION:
-  Navigate to "Create Quiz". Add a title, then add as many multiple-choice
-  questions as you want.
+FOR STUDENTS:
+1. REGISTER: Choose the 'Student' role during signup.
+2. JOIN ROOM: Go to 'Classrooms' -> 'Join Classroom' and enter the code
+   provided by your teacher.
+3. TAKE QUIZZES: Once joined, enter the classroom to see and take 
+   available quizzes.
 
-- PROFILE MANAGEMENT (ACCOUNT):
-  Go to the "Account" section in the menu to update your Full Name,
-  Username, or Email.
+--- GENERAL FEATURES ---
 
-- RESULTS & FEEDBACK:
-  After finishing a quiz, you will see your score and a detailed
-  breakdown showing which questions you got right, which you got wrong,
-  and what the correct answers were.
+- DETAILED RESULTS: See your score and a breakdown of correct/incorrect 
+  answers immediately after submission.
+- PROFILE: Update your name and credentials in the 'Account' section.
+- ROBUSTNESS: Explicit checks for duplicate usernames/emails to 
+  prevent errors.
 
-- DELETE QUIZZES:
-  On the home page, you will see a 'Delete' button for any quiz you created.
-
---- TROUBLESHOOTING ---
-
-- DATABASE ERROR: If you see an error related to columns (like fullname),
-  simply delete the 'instance/site.db' file and restart the project.
-  The app will recreate a clean database automatically.
-
-Enjoy Quizify!
+Enjoy the new Classroom experience!
 =========================================

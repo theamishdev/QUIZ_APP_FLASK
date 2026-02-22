@@ -15,6 +15,7 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        role = request.form.get('role', 'student')
 
         if password != confirm_password:
             flash('Passwords do not match', 'danger')
@@ -31,7 +32,7 @@ def register():
 
         try:
             hashed_password = generate_password_hash(password)
-            user = User(username=username, email=email, password=hashed_password)
+            user = User(username=username, email=email, password=hashed_password, role=role)
             db.session.add(user)
             db.session.commit()
             flash('Your account has been created! You are now able to log in', 'success')

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>{{ classroom.name }}</h1>
+            <p class="text-muted">Managed by {{ classroom.admin.username }}</p>
+        </div>
+        {% if current_user.role == 'teacher' %}
+            <div style="text-align: right;">
+                <p>Join Code: <strong style="color: var(--primary); font-size: 1.2rem;">{{ classroom.join_code }}</strong></p>
+                <a href="{{ url_for('quiz.new_quiz', classroom_id=classroom.id) }}" class="btn btn-primary" style="margin-top: 0.5rem;">Create New Quiz</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<h2 style="margin: 2rem 0;">Quizzes</h2>
+<div class="quiz-grid">
+    {% for quiz in classroom.quizzes %}
+        <div class="glass-card">
+            <h3>{{ quiz.title }}</h3>
+            <p>{{ quiz.description }}</p>
+            <div class="quiz-meta" style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Questions: {{ quiz.questions|length }}</span>
+                <span>{{ quiz.date_posted.strftime('%Y-%m-%d') }}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <a href="{{ url_for('quiz.take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary" style="flex: 1;">Take Quiz</a>
+                {% if current_user.role == 'teacher' %}
+                    <form action="{{ url_for('quiz.delete_quiz', quiz_id=quiz.id) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="classroom_id" value="{{ classroom.id }}">
+                        <button type="submit" class="btn" style="background: #ef4444; color: white;" onclick="return confirm('Delete this quiz?')">Delete</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card" style="grid-column: 1/-1; text-align: center;">
+            <p>No quizzes available in this classroom yet.</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% if current_user.role == 'teacher' %}
+<h2 style="margin: 2rem 0;">Students</h2>
+<div class="glass-card">
+    <ul style="list-style: none;">
+        {% for student in classroom.students %}
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between;">
+                <span>{{ student.fullname if student.fullname else student.username }} ({{ student.username }})</span>
+                <span class="text-muted">{{ student.email }}</span>
+            </li>
+        {% else %}
+            <li>No students have joined this classroom yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

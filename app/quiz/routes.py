@@ -1,27 +1,37 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint, abort
 from flask_login import current_user, login_required
 from app import db
-from app.models import Quiz, Question, Choice, Result
+from app.models import Quiz, Question, Choice, Result, Classroom
 
 quiz = Blueprint('quiz', __name__)
 
 @quiz.route("/quiz/new", methods=['GET', 'POST'])
 @login_required
 def new_quiz():
+    if current_user.role != 'teacher':
+        abort(403)
+        
+    classroom_id = request.args.get('classroom_id', type=int)
+    if not classroom_id:
+        flash('You must create a quiz within a classroom.', 'warning')
+        return redirect(url_for('classroom.list_classrooms'))
+        
+    classroom_obj = Classroom.query.get_or_404(classroom_id)
+    if classroom_obj.admin != current_user:
+        abort(403)
+
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
         
-        # Simplified creation for demo, normally would parse dynamic question inputs
-        quiz_obj = Quiz(title=title, description=description, author=current_user)
+        quiz_obj = Quiz(title=title, description=description, author=current_user, classroom=classroom_obj)
         db.session.add(quiz_obj)
         db.session.commit()
         
-        # In a real app, questions would be added here via AJAX or dynamic form
         flash('Quiz header created! Now add your questions.', 'success')
         return redirect(url_for('quiz.add_question', quiz_id=quiz_obj.id))
         
-    return render_template('quiz/create.html', title='New Quiz')
+    return render_template('quiz/create.html', title='New Quiz', classroom=classroom_obj)
 
 @quiz.route("/quiz/<int:quiz_id>/add_question", methods=['GET', 'POST'])
 @login_required
@@ -94,7 +104,11 @@ def delete_quiz(quiz_id):
     quiz_obj = Quiz.query.get_or_404(quiz_id)
     if quiz_obj.author != current_user:
         abort(403)
+    
+    classroom_id = quiz_obj.classroom_id
     db.session.delete(quiz_obj)
     db.session.commit()
     flash('Your quiz has been deleted!', 'success')
+    if classroom_id:
+        return redirect(url_for('classroom.view_classroom', classroom_id=classroom_id))
     return redirect(url_for('main.home'))

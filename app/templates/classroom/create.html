@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card" style="max-width: 600px; margin: 2rem auto;">
+    <h2>Create New Classroom</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Classroom Name</label>
+            <input type="text" name="name" class="form-control" placeholder="e.g. Computer Science 101" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+{% endblock %}

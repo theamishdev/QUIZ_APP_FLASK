@@ -13,10 +13,10 @@
             <a href="{{ url_for('main.home') }}" class="brand">Quizify</a>
             <div class="nav-links">
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('quiz.new_quiz') }}">Create Quiz</a>
+                    <a href="{{ url_for('classroom.list_classrooms') }}">Classrooms</a>
                     <a href="{{ url_for('auth.account') }}">Account</a>
                     <a href="{{ url_for('auth.logout') }}">Logout</a>
-                    <span class="user-badge">{{ current_user.username }}</span>
+                    <span class="user-badge">{{ current_user.username }} ({{ current_user.role|capitalize }})</span>
                 {% else %}
                     <a href="{{ url_for('auth.login') }}">Login</a>
                     <a href="{{ url_for('auth.register') }}">Register</a>
