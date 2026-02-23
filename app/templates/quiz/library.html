@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Inbuilt Quiz Library</h1>
+            <p class="text-muted">Choose a technical quiz to add to your classroom.</p>
+        </div>
+        {% if classroom %}
+            <a href="{{ url_for('classroom.view_classroom', classroom_id=classroom.id) }}" class="btn">Back to Classroom</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="quiz-grid" style="margin-top: 2rem;">
+    {% for template in templates %}
+        <div class="glass-card">
+            <h3>{{ template.title }}</h3>
+            <p>{{ template.description }}</p>
+            <div class="quiz-meta" style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Questions: {{ template.questions|length }}</span>
+            </div>
+            
+            <form action="{{ url_for('quiz.import_quiz', quiz_id=template.id) }}" method="POST" style="margin-top: 1.5rem;">
+                {% if classroom %}
+                    <input type="hidden" name="classroom_id" value="{{ classroom.id }}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Add to {{ classroom.name }}</button>
+                {% else %}
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="classroom_id_{{ template.id }}" style="font-size: 0.8rem;">Select Classroom:</label>
+                        <select name="classroom_id" id="classroom_id_{{ template.id }}" class="form-control" required>
+                            <option value="">-- Choose Classroom --</option>
+                            {% for c in current_user.owned_classrooms %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary">Import Quiz</button>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    {% else %}
+        <div class="glass-card" style="grid-column: 1/-1; text-align: center;">
+            <p>No templates available in the library yet.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: white;
+    }
+    .form-control option {
+        background: #1a1a2e;
+        color: white;
+    }
+</style>
+{% endblock %}

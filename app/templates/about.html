@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="about-container">
+    <h1>About Quizify</h1>
+    <p>Quizify is a classroom-based quiz platform designed for educators and students to collaborate and learn together.</p>
+    
+    <h2>Features</h2>
+    <ul>
+        <li><strong>Classroom Management:</strong> Teachers can create classrooms and share join codes with students</li>
+        <li><strong>Quiz Creation:</strong> Easy-to-use interface for creating multiple-choice quizzes</li>
+        <li><strong>Instant Feedback:</strong> Get immediate results with detailed answer breakdowns</li>
+        <li><strong>Role-Based System:</strong> Different interfaces for teachers and students</li>
+        <li><strong>Secure Authentication:</strong> Safe login and account management</li>
+    </ul>
+    
+    <h2>Getting Started</h2>
+    <p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Create an Account</a>
+        {% else %}
+            <a href="{{ url_for('classroom.list_classrooms') }}" class="btn btn-primary">Go to Classrooms</a>
+        {% endif %}
+    </p>
+    
+    <h2>How It Works</h2>
+    <div class="workflow">
+        <div class="step">
+            <h3>For Teachers:</h3>
+            <ol>
+                <li>Register with the teacher role</li>
+                <li>Create a classroom</li>
+                <li>Share the join code with students</li>
+                <li>Create quizzes within the classroom</li>
+            </ol>
+        </div>
+        <div class="step">
+            <h3>For Students:</h3>
+            <ol>
+                <li>Register with the student role</li>
+                <li>Join a classroom using the code</li>
+                <li>Take quizzes assigned by your teacher</li>
+                <li>View detailed results immediately</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<style>
+    .about-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    .about-container h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .about-container h2 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #e0e7ff;
+    }
+    .about-container ul, .about-container ol {
+        margin: 1rem 0 1rem 2rem;
+        line-height: 1.8;
+    }
+    .about-container li {
+        margin: 0.5rem 0;
+    }
+    .workflow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    .step {
+        background: rgba(99, 102, 241, 0.1);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    @media (max-width: 600px) {
+        .workflow {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

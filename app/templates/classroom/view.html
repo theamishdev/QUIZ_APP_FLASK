@@ -9,7 +9,10 @@
         {% if current_user.role == 'teacher' %}
             <div style="text-align: right;">
                 <p>Join Code: <strong style="color: var(--primary); font-size: 1.2rem;">{{ classroom.join_code }}</strong></p>
-                <a href="{{ url_for('quiz.new_quiz', classroom_id=classroom.id) }}" class="btn btn-primary" style="margin-top: 0.5rem;">Create New Quiz</a>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
+                    <a href="{{ url_for('quiz.library', classroom_id=classroom.id) }}" class="btn">Import from Library</a>
+                    <a href="{{ url_for('quiz.new_quiz', classroom_id=classroom.id) }}" class="btn btn-primary">Create New Quiz</a>
+                </div>
             </div>
         {% endif %}
     </div>
