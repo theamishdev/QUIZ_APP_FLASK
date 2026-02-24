@@ -1,0 +1,61 @@
+PEP_PRO — Help Manual
+
+Overview
+- Small Flask app for classrooms and quizzes. This file summarizes setup, database, migrations, and common troubleshooting steps.
+
+Prerequisites
+- Python 3.10+ (3.14 tested here)
+- PostgreSQL (optional: app supports SQLite fallback)
+- Recommended: create and activate a virtual environment
+
+Environment variables
+- `FLASK_ENV` (development|production)
+- `FLASK_APP` (e.g. `run.py`)
+- `SECRET_KEY` (replace default in production)
+- `DATABASE_URL` (Postgres or SQLite). Examples:
+  - SQLite: `sqlite:///site.db`
+  - Postgres (pg8000): `postgresql+pg8000://user:pass@host:5432/dbname`
+  - Postgres (psycopg2): `postgresql://user:pass@host:5432/dbname`
+  - If password contains `@`, URL-encode it (e.g. `@` -> `%40`).
+
+Install dependencies
+1. Activate your venv.
+2. Install packages:
+   pip install -r requirements.txt
+
+Create database (Postgres)
+- Option A (helper script, uses `DATABASE_URL`):
+  python create_database.py
+- Option B (psql):
+  createdb -h host -p 5432 -U username dbname
+
+Migrations
+- A migration helper is included: `run_migrations.py` which runs `flask db init` (once), `flask db migrate`, and `flask db upgrade`.
+- Manual commands (from project root):
+  flask db init
+  flask db migrate -m "message"
+  flask db upgrade
+
+Seeding data
+- To add sample users, classroom, quizzes run:
+  python manage_db.py seed
+
+Running the app
+- Initialize DB (if needed): `python manage_db.py init`
+- Run server:
+  python run.py
+
+Notes & troubleshooting
+- If `psycopg2` fails to install on Windows, either install Visual C++ Build Tools or use `pg8000` and a `postgresql+pg8000://` URL.
+- If you see "database does not exist", create the DB first (see Create database section).
+- If a migration reports no changes but models changed, ensure `FLASK_APP` is set and imports models (the project `run.py` exposes the app and `db`).
+- Password hashes may exceed old column sizes; the project uses a 255-char `password` column.
+
+Where to look
+- Project entry: `run.py`
+- App factory and DB: `app/__init__.py`
+- Models: `app/models.py`
+- DB management: `manage_db.py`, `run_migrations.py`, `create_database.py`
+- Additional docs: `README.md`, `QUICKSTART.md`
+
+If you want the manual in another format (README, markdown, or integrated docs), tell me where to place it.

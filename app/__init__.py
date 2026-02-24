@@ -2,9 +2,11 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+migrate = Migrate()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
 
@@ -16,8 +18,11 @@ def create_app():
     
     # Database configuration - supports different databases based on environment
     db_path = os.environ.get('DATABASE_URL', 'sqlite:///site.db')
+    # Normalize Heroku-style Postgres URL (postgres://) to SQLAlchemy-compatible (postgresql://)
+    if isinstance(db_path, str) and db_path.startswith('postgres://'):
+        db_path = db_path.replace('postgres://', 'postgresql://', 1)
+    # If using SQLite ensure instance folder exists
     if db_path.startswith('sqlite://'):
-        # Ensure instance folder exists for SQLite
         os.makedirs(os.path.join(os.path.dirname(__file__), '..', 'instance'), exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -29,6 +34,8 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+    # Initialize Flask-Migrate
+    migrate.init_app(app, db)
 
     # Register blueprints
     from app.main.routes import main

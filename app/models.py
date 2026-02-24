@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     fullname = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     role = db.Column(db.String(10), nullable=False, default='student') # 'teacher' or 'student'
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     # Relationships
