@@ -6,6 +6,15 @@ except ImportError:
     # dotenv not installed, that's okay for development
     pass
 
+# Guard against malformed DATABASE_URL values in the environment (e.g. missing
+# scheme) which would break SQLAlchemy/DB drivers on startup. For local
+# development, fall back to a SQLite DB file when the value looks invalid.
+import os as _os
+_db_url = _os.environ.get('DATABASE_URL')
+if _db_url and '://' not in _db_url:
+    print('Warning: malformed DATABASE_URL detected; falling back to sqlite for development')
+    _os.environ['DATABASE_URL'] = 'sqlite:///site.db'
+
 from app import create_app, db
 
 app = create_app()

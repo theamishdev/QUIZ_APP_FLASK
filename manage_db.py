@@ -14,6 +14,12 @@ sys.path.insert(0, str(Path(__file__).parent))
 from app import create_app, db
 from app.models import User, Classroom, Quiz, Question, Choice, Result
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 def reset_db():
     """Drop all tables and recreate them"""
     app = create_app()
@@ -25,12 +31,69 @@ def reset_db():
         print("✓ Database reset successfully!")
 
 def init_db():
-    """Initialize database if not exists"""
+    """Create database if it doesn't exist and run migrations."""
+    print("Checking database configuration...")
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        print("✗ Error: DATABASE_URL not set")
+        return
+
+    from urllib.parse import urlparse, unquote
+    p = urlparse(db_url)
+    
+    # Handle PostgreSQL creation
+    if db_url.startswith('postgresql'):
+        import psycopg2
+        from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+        
+        username = unquote(p.username) if p.username else 'postgres'
+        password = unquote(p.password) if p.password else 'postgres'
+        host = p.hostname or 'localhost'
+        port = p.port or 5432
+        dbname = p.path.lstrip('/')
+        
+        print(f"Ensuring database '{dbname}' exists on {host}:{port}...")
+        
+        conn = None
+        try:
+            # Connect to default 'postgres' database
+            conn = psycopg2.connect(
+                user=username, 
+                password=password, 
+                host=host, 
+                port=port, 
+                database='postgres'
+            )
+            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+            cur = conn.cursor()
+            
+            # Check if DB exists
+            cur.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = '{dbname}'")
+            exists = cur.fetchone()
+            if not exists:
+                cur.execute(f"CREATE DATABASE \"{dbname}\"")
+                print(f"✓ Database '{dbname}' created successfully")
+            else:
+                print(f"✓ Database '{dbname}' already exists")
+            
+        except Exception as e:
+            print(f"✗ Database check/creation failed: {e}")
+        finally:
+            if conn:
+                conn.close()
+
+    print("Initializing tables...")
+    from app import create_app, db
+    import traceback
     app = create_app()
     with app.app_context():
-        print("Initializing database...")
-        db.create_all()
-        print("✓ Database initialized successfully!")
+        try:
+            db.create_all()
+            print("✓ Database tables initialized successfully!")
+        except Exception as e:
+            print(f"✗ Error initializing tables: {e}")
+            traceback.print_exc()
+            raise e
 
 def seed_db():
     """Add sample data for testing"""

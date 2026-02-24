@@ -46,16 +46,16 @@ Running the app
   python run.py
 
 Notes & troubleshooting
-- If `psycopg2` fails to install on Windows, either install Visual C++ Build Tools or use `pg8000` and a `postgresql+pg8000://` URL.
+- The project automatically detects if `psycopg2` is missing on Windows and falls back to `pg8000` for PostgreSQL databases.
+- Ensure `pg8000` is installed via `requirements.txt`.
 - If you see "database does not exist", create the DB first (see Create database section).
 - If a migration reports no changes but models changed, ensure `FLASK_APP` is set and imports models (the project `run.py` exposes the app and `db`).
-- Password hashes may exceed old column sizes; the project uses a 255-char `password` column.
+- Configuration is now centralized in `config.py` and supports `FLASK_ENV` switching (development/production/testing).
 
 Where to look
 - Project entry: `run.py`
-- App factory and DB: `app/__init__.py`
+- App factory and DB initialization: `app/__init__.py`
+- Configuration: `config.py`
 - Models: `app/models.py`
 - DB management: `manage_db.py`, `run_migrations.py`, `create_database.py`
-- Additional docs: `README.md`, `QUICKSTART.md`
-
-If you want the manual in another format (README, markdown, or integrated docs), tell me where to place it.
+- Additional docs: `README.md`, `QUICKSTART.md`, `FIXES_SUMMARY.md`
