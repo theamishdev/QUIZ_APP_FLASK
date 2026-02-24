@@ -10,7 +10,11 @@ A Flask-based web application for creating and managing classroom quizzes with r
 - **Quiz Taking**: Students can take quizzes and get instant results with detailed feedback
 - **Result Tracking**: View detailed results with correct/incorrect answers
 - **Responsive Design**: Beautiful glassmorphism-style UI
-- **Database**: SQLite (default) or other SQL databases
+- **Database**: PostgreSQL (configured) or SQLite
+
+## Demo - Quiz Results
+
+![Quiz Result Part](assets/quiz_result.webp)
 
 ## Project Structure
 

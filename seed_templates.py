@@ -1,8 +1,16 @@
 from app import create_app, db
 from app.models import User, Quiz, Question, Choice
 from werkzeug.security import generate_password_hash
+import os
+try:
+    from dotenv import load_dotenv
+    # Explicitly load from current directory
+    load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+except ImportError:
+    pass
 
 def seed_templates():
+    print(f"DATABASE_URL from env: {os.environ.get('DATABASE_URL')}")
     app = create_app()
     with app.app_context():
         # Ensure all tables are created (including new is_template column)
