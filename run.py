@@ -22,24 +22,32 @@ app = create_app()
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db}
-
 if __name__ == '__main__':
-    with app.app_context():
-        try:
-            db.create_all()
-            print("✓ Database initialized successfully")
-        except Exception as e:
-            print(f"✗ Error initializing database: {e}")
-            
     # Get configuration from environment
     host = os.environ.get('FLASK_HOST', '127.0.0.1')
     port = int(os.environ.get('FLASK_PORT', 5000))
     debug = os.environ.get('FLASK_ENV') != 'production'
     
-    print(f"\n{'='*50}")
-    print(f"Starting Quizify on http://{host}:{port}")
-    print(f"Press CTRL+C to stop the server")
-    print(f"{'='*50}\n")
+    # Only run DB initialization once. 
+    # WERKZEUG_RUN_MAIN is set by the Werkzeug reloader in the child process.
+    # In debug mode, the main process is just a supervisor. 
+    # The actual app runs in the child process.
+    is_reloader_child = os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+    
+    if not debug or is_reloader_child:
+        with app.app_context():
+            try:
+                db.create_all()
+                print("✓ Database initialized successfully")
+            except Exception as e:
+                print(f"✗ Error initializing database: {e}")
+
+    if not is_reloader_child:
+        print(f"\n{'='*50}")
+        print(f"Starting Quizify on http://{host}:{port}")
+        print(f"Debug mode: {'ON' if debug else 'OFF'}")
+        print(f"Press CTRL+C to stop the server")
+        print(f"{'='*50}\n")
     
     app.run(host=host, port=port, debug=debug)
 

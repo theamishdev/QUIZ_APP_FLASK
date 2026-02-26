@@ -4,10 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import config
+# from authlib.integrations.flask_client import OAuth  # Removed Google OAuth
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+# oauth = OAuth()  # Removed Google OAuth
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
 
@@ -60,6 +62,17 @@ def create_app(config_class=config):
     login_manager.init_app(app)
     # Initialize Flask-Migrate
     migrate.init_app(app, db)
+    # oauth.init_app(app)  # Removed Google OAuth
+    
+    # oauth.register(
+    #     name='google',
+    #     client_id=app.config.get('GOOGLE_CLIENT_ID'),
+    #     client_secret=app.config.get('GOOGLE_CLIENT_SECRET'),
+    #     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    #     client_kwargs={
+    #         'scope': 'openid email profile'
+    #     }
+    # )
 
     # Register blueprints
     from app.main.routes import main

@@ -6,6 +6,12 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///site.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+    CHATBOT_MOCK_MODE = False  # Force disabled to use Groq API
+    # GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+    # GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
     SESSION_COOKIE_SECURE = os.environ.get('FLASK_ENV') == 'production'
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'

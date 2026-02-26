@@ -6,3 +6,5 @@ python-dotenv==1.0.0
 pg8000==1.30.3
 psycopg2-binary==2.9.9
 Flask-Migrate==4.0.4
+requests==2.31.0
+

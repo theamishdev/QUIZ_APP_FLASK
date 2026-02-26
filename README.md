@@ -218,3 +218,17 @@ For issues or questions, please refer to the project documentation or create an 
 
 **Version**: 1.0.0  
 **Last Updated**: February 2026
+
+## Gemini API Limits (Free Tier)
+
+The integrated chatbot uses the Gemini API Free Tier by default. Here are the key limits to be aware of:
+
+- **Rate Limits**: 
+  - **Gemini 2.0 Flash**: 10 RPM (Requests Per Minute), 1,500 RPD (Requests Per Day).
+  - **Gemini 1.5 Flash**: 15 RPM, 1,500 RPD.
+  - **Gemini 3 Flash Preview**: Highly restrictive/variable as it is experimental.
+- **Context Window**: ~1 million tokens per model.
+- **Daily Quota**: Quotas reset daily at midnight Pacific Time.
+- **Data Usage**: In the free tier, input/output data may be used by Google to improve their models. Avoid sharing sensitive personal information.
+
+If you encounter a `429 Quota Exceeded` error, you can obtain a new free API key at [Google AI Studio](https://aistudio.google.com/app/apikey).

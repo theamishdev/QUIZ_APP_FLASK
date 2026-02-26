@@ -1,5 +1,6 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, current_app
 from flask_login import login_user, current_user, logout_user, login_required
+from app import db # , oauth  # Removed Google OAuth
 from sqlalchemy.exc import IntegrityError
 from app import db
 from app.models import User
@@ -9,11 +10,15 @@ import re
 
 auth = Blueprint('auth', __name__)
 
+
+
+
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     if request.method == 'POST':
+
         username = sanitize_string(request.form.get('username', ''), 20).strip()
         email = sanitize_string(request.form.get('email', ''), 120).strip().lower()
         password = request.form.get('password', '')
@@ -91,6 +96,7 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     if request.method == 'POST':
+
         email = sanitize_string(request.form.get('email', ''), 120).strip().lower()
         password = request.form.get('password', '')
         
@@ -110,6 +116,9 @@ def login():
             print(f"✗ Login error: {str(e)}")
             flash('Error during login. Please try again.', 'danger')
     return render_template('auth/login.html', title='Login')
+
+
+# Removed Google login routes
 
 @auth.route("/logout")
 def logout():
